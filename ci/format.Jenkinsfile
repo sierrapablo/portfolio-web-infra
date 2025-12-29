@@ -21,6 +21,14 @@ pipeline {
       }
     }
 
+    stage('Terraform Init') {
+      steps {
+        dir('terraform') {
+          sh 'terraform init'
+        }
+      }
+    }
+
     stage('Terraform Format') {
       steps {
         dir('terraform') {
