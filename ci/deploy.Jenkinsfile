@@ -77,5 +77,11 @@ pipeline {
         ==========================================
       """
     }
+    always {
+      dir('terraform') {
+        echo 'Remove lock files...'
+        sh 'rm -f terraform.tfstate.lock.hcl terraform.tfstate terraform.tfstate.backup .terraform.lock.hcl'
+      }
+    }
   }
 }
