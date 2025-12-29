@@ -13,18 +13,20 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        script {
-          if (!params.TAG) {
-            error "The 'TAG' parameter is mandatory."
+        sshagent(credentials: ['github']) {
+          script {
+            if (!params.TAG) {
+              error "The 'TAG' parameter is mandatory."
+            }
+            sh """
+              git config user.name "${env.GIT_USER_NAME}"
+              git config user.email "${env.GIT_USER_EMAIL}"
+
+              git fetch --tags
+              git checkout tags/${params.TAG}
+            """
           }
         }
-        sh """
-          git config user.name "${env.GIT_USER_NAME}"
-          git config user.email "${env.GIT_USER_EMAIL}"
-
-          git fetch --tags
-          git checkout tags/${params.TAG}
-        """
       }
     }
 
