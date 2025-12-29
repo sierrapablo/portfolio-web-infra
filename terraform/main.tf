@@ -1,19 +1,32 @@
-# Example main
-# Use this file to define the resources you want to create.
+module "reverse_proxy_network" {
+  source = "./modules/network"
 
-# Example: this module uses default module variables
-module "hello_world_module" {
-  source = "./modules/hello-world"
+  name     = var.reverse_proxy_network_name
+  external = var.reverse_proxy_network_external
 }
 
-# Example: this module uses variables defined in terraform variables.tf
-module "hello_world_variables" {
-  source  = "./modules/hello-world"
-  message = var.example # If you set the variables in terraform.tfvars, the value will be used
+module "portfolio_dist_volume" {
+  source = "./modules/volume"
+
+  name = var.portfolio_dist_volume_name
+
+  labels = {
+    project     = var.project_name
+    environment = var.environment
+    purpose     = "static-assets"
+  }
 }
 
-# Example: this module uses variables defined here
-module "hello_world_main" {
-  source  = "./modules/hello-world"
-  message = "Hello from main.tf!"
+module "nginx" {
+  source = "./modules/nginx"
+
+  name          = var.nginx_name
+  image_name    = var.nginx_image_name
+  build_context = var.nginx_build_context
+
+  network_name = module.reverse_proxy_network.name
+  volume_name  = module.portfolio_dist_volume.name
+
+  internal_port = var.nginx_internal_port
+  external_port = var.nginx_external_port
 }

@@ -1,16 +1,24 @@
-# Example outputs
-
-# Output from module variables
-output "hello_world_module" {
-  value = module.hello_world_module.message
+output "project" {
+  description = "Nombre del proyecto"
+  value       = var.project_name
 }
 
-# Output from terraform variables
-output "hello_world_variables" {
-  value = module.hello_world_variables.message
+output "reverse_proxy_network_name" {
+  value = module.reverse_proxy_network.name
 }
 
-# Output from main.tf variables
-output "hello_world_main" {
-  value = module.hello_world_main.message
+output "reverse_proxy_network_id" {
+  value = module.reverse_proxy_network.id
+}
+
+output "dist_volume_name" {
+  value = module.portfolio_dist_volume.name
+}
+
+output "dist_volume_mountpoint" {
+  value = module.portfolio_dist_volume.mountpoint
+}
+
+output "nginx_container" {
+  value = module.nginx.container_name
 }
