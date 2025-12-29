@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     GIT_USER_NAME = 'Jenkins CI'
-    GIT_USER_EMAIL = 'ci-bot@jenkins'
+    GIT_USER_EMAIL = 'jenkins[bot]@noreply.jenkins.io'
   }
 
   stages {
@@ -105,6 +105,51 @@ pipeline {
       }
     }
 
+    stage('Generate Release Notes') {
+      steps {
+        script {
+          sh """
+            PREV_TAG=\$(git describe --tags --abbrev=0 "${env.NEW_VERSION}^" 2>/dev/null || echo "")
+            if [ -z "\$PREV_TAG" ]; then
+              git log --oneline > changes.txt
+            else
+              git log --oneline "\$PREV_TAG".."${env.NEW_VERSION}" > changes.txt
+            fi
+          """
+        }
+      }
+    }
+
+    stage('Create GitHub Release') {
+      steps {
+        withCredentials([string(credentialsId: 'github-repo-pat', variable: 'GITHUB_PAT')]) {
+          script {
+            def changes = readFile('changes.txt').trim()
+            def changesEscaped = changes.replace('"', '\\"').replace('\n', '\\n')
+
+            writeFile file: 'release.json', text: """
+            {
+              "tag_name": "${env.NEW_VERSION}",
+              "name": "Release ${env.NEW_VERSION}",
+              "body": "${changesEscaped}",
+              "draft": false,
+              "prerelease": false
+            }
+            """
+
+            sh """
+              curl -X POST \
+                -H "Authorization: token ${GITHUB_PAT}" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/repos/sierrapablo/portfolio-web-infra/releases \
+                -d @release.json
+            """
+            sh 'rm -f changes.txt release.json'
+          }
+        }
+      }
+    }
+
     stage('Sync develop with main') {
       steps {
         sshagent(credentials: ['github']) {
@@ -112,7 +157,7 @@ pipeline {
             sh '''
               git checkout develop
               git pull origin develop
-              git merge main
+              git merge --ff-only main || git merge main
               git push origin develop
             '''
           }
