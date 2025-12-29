@@ -9,13 +9,15 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        sh """
-          git config user.name "${env.GIT_USER_NAME}"
-          git config user.email "${env.GIT_USER_EMAIL}"
+        sshagent(credentials: ['github']) {
+          sh """
+            git config user.name "${env.GIT_USER_NAME}"
+            git config user.email "${env.GIT_USER_EMAIL}"
 
-          git checkout develop
-          git pull origin develop
-        """
+            git checkout develop
+            git pull origin develop
+          """
+        }
       }
     }
 
