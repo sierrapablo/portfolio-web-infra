@@ -46,3 +46,8 @@ variable "restart_policy" {
   type        = string
   default     = "unless-stopped"
 }
+
+variable "host_path" {
+  description = "Ruta del host para el volumen con contenido estático"
+  type        = string
+}

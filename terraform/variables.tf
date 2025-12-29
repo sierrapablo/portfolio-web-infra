@@ -57,3 +57,9 @@ variable "nginx_external_port" {
   type        = number
   default     = 4321
 }
+
+variable "host_path" {
+  description = "Ruta del host para el volumen con contenido estático"
+  type        = string
+  default     = "/srv/portfolio-web"
+}
