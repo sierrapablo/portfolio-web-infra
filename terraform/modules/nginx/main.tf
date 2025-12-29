@@ -21,7 +21,7 @@ resource "docker_container" "this" {
     volume_name    = var.volume_name
     container_path = "/usr/share/nginx/html"
     host_path      = var.host_path
-    read_only      = true
+    read_only      = false
   }
 
   networks_advanced {
