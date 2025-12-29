@@ -77,9 +77,5 @@ pipeline {
         ==========================================
       """
     }
-    always {
-      echo 'Attempting to clean up workspace...'
-      cleanWs()
-    }
   }
 }
