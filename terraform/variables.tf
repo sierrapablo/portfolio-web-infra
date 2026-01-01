@@ -31,7 +31,7 @@ variable "portfolio_dist_volume_name" {
 variable "nginx_name" {
   description = "Nombre del contenedor del nginx"
   type        = string
-  default     = "portfolio-web-test"
+  default     = "portfolio-web"
 }
 
 variable "nginx_image_name" {
