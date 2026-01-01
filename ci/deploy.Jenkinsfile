@@ -2,7 +2,14 @@ pipeline {
   agent any
 
   parameters {
-    string(name: 'TAG', defaultValue: '', description: 'Tag to deploy')
+    gitParameter(
+      name: 'TAG',
+      type: 'PT_TAG',
+      defaultValue: '',
+      description: 'Tag to deploy',
+      sortMode: 'DESCENDING_SMART',
+      selectedValue: 'TOP'
+    )
   }
 
   environment {
@@ -15,15 +22,15 @@ pipeline {
       steps {
         sshagent(credentials: ['github']) {
           script {
-            if (!params.TAG) {
-              error "The 'TAG' parameter is mandatory."
+            if (!params.TAG || params.TAG == '') {
+              error "The 'TAG' parameter is mandatory. Please select a valid tag."
             }
             sh """
               git config user.name "${env.GIT_USER_NAME}"
               git config user.email "${env.GIT_USER_EMAIL}"
 
-              git fetch --tags
-              git checkout tags/${params.TAG}
+              git fetch --tags --force
+              git checkout ${params.TAG}
             """
           }
         }
@@ -76,12 +83,6 @@ pipeline {
         Duration: ${currentBuild.durationString}
         ==========================================
       """
-    }
-    always {
-      dir('terraform') {
-        echo 'Remove lock files...'
-        sh 'rm -f terraform.tfstate.lock.hcl terraform.tfstate terraform.tfstate.backup .terraform.lock.hcl'
-      }
     }
   }
 }
