@@ -35,12 +35,6 @@ variable "internal_port" {
   default     = 4321
 }
 
-variable "external_port" {
-  description = "Puerto expuesto en el host"
-  type        = number
-  default     = 4321
-}
-
 variable "restart_policy" {
   description = "Política de restart del contenedor"
   type        = string

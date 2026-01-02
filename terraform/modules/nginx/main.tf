@@ -12,10 +12,7 @@ resource "docker_container" "this" {
   image   = docker_image.this.image_id
   restart = var.restart_policy
 
-  ports {
-    internal = var.internal_port
-    external = var.external_port
-  }
+  exposed_ports = ["${var.internal_port}/tcp"]
 
   volumes {
     volume_name    = var.volume_name
