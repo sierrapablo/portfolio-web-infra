@@ -1,57 +1,74 @@
-# Terraform Infrastructure
+# Terraform Root Configuration
 
-This directory contains the main Terraform configuration for a project. It serves as the root module that orchestrates the provisioning of infrastructure resources.
+This directory contains the root Terraform configuration for the Portfolio Web infrastructure. It orchestrates the various modules to deploy a containerized Nginx environment with networking and persistent storage.
 
-## Table of Contents
+## Architecture Overview
 
-- [Architecture](#architecture)
-- [Modules](#modules)
-- [Prerequisites](#prerequisites)
-- [Usage](#usage)
+The infrastructure is composed of:
 
-## Architecture
+1.  **Network**: A dedicated Docker bridge network for container isolation.
+2.  **Volume**: Persisted storage for static assets (portfolio distribution).
+3.  **Container**: An Nginx instance built and deployed from a local Dockerfile.
 
-The architecture of the infrastructure is defined by the `terraform/` directory:
+## File Structure
 
-- `main.tf`: Main configuration.
-- `outputs.tf`: Configuration outputs.
-- `variables.tf`: Configuration variables.
-- `versions.tf`: Configuration versions.
-- `providers.tf`: Configuration providers.
-- `modules/`: Configuration modules.
+| File               | Description                                                                        |
+| :----------------- | :--------------------------------------------------------------------------------- |
+| **`main.tf`**      | Orchestrates the infrastructure by calling the modules.                            |
+| **`variables.tf`** | Declares all configuration parameters with validation where needed.                |
+| **`versions.tf`**  | Specifies Terraform version and provider constraints (e.g., `kreuzwerker/docker`). |
+| **`outputs.tf`**   | Exposes relevant attributes (container names, network IDs).                        |
 
-## Modules
-
-The infrastructure is composed of the following modules instantiated in `main.tf`:
-
-### Example - Hello World
-
-- **Source**: `./modules/hello-world`
-- **Purpose**: Serve as an example of a module.
-- **Configuration**:
-  - `main.tf`: Main module configuration.
-  - `outputs.tf`: Module outputs.
-  - `variables.tf`: Module variables.
+---
 
 ## Prerequisites
 
-[Terraform](https://www.terraform.io/downloads.html) installed (version defined in `versions.tf`).
+- **Terraform**: `v1.5.0` or higher.
+- **Docker Engine**: Must be running on the host machine.
+- **Provider**: `kreuzwerker/docker` provider (automatically downloaded on `init`).
 
-## Usage
+## Configuration (Variables)
 
-1.  **Initialize**: Download providers and modules.
+Key variables used in this configuration:
 
-    ```bash
-    terraform init
-    ```
+- `project_name`: Used for labeling resources.
+- `environment`: Deployment environment (e.g., `prod`, `dev`).
+- `nginx_image_name`: Name for the built Docker image.
+- `host_path`: Path on the host machine for volume data.
 
-2.  **Plan**: Preview changes.
+---
 
-    ```bash
-    terraform plan
-    ```
+## Deployment Workflow
 
-3.  **Apply**: Create/Update resources.
-    ```bash
-    terraform apply
-    ```
+### 1. Initialization
+
+Downloads providers and prepares the backend:
+
+```bash
+terraform init
+```
+
+### 2. Validation & Formatting
+
+Ensure code quality (handled automatically by Jenkins `format.Jenkinsfile`):
+
+```bash
+terraform fmt
+terraform validate
+```
+
+### 3. Planning
+
+Review the changes before applying:
+
+```bash
+terraform plan
+```
+
+### 4. Application
+
+Deploy the infrastructure (handled by Jenkins `deploy.Jenkinsfile`):
+
+```bash
+terraform apply
+```

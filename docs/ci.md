@@ -1,38 +1,78 @@
-# CI/CD Directory
+# CI/CD Pipelines with Jenkins
 
-This directory contains the Continuous Integration and Continuous Deployment (CI/CD) pipelines used for this project.
+This directory contains the Jenkinsfiles used to manage the lifecycle of the infrastructure. All pipelines are designed to run on a Jenkins node with the necessary tools installed (Terraform, Sonar-scanner, etc.).
 
 ## Table of Contents
 
 - [Release Pipeline (`release.Jenkinsfile`)](#release-pipeline-releasejenkinsfile)
+- [Deploy Pipeline (`deploy.Jenkinsfile`)](#deploy-pipeline-deployjenkinsfile)
+- [Format & Validate Pipeline (`format.Jenkinsfile`)](#format--validate-pipeline-formatjenkinsfile)
+- [SonarQube Analysis (`sonarqube.Jenkinsfile`)](#sonarqube-analysis-sonarqubejenkinsfile)
+
+---
 
 ## Pipelines
 
-### Release Pipeline (`release.Jenkinsfile`)
+### 1. Release Pipeline (`release.Jenkinsfile`)
 
-This Jenkinsfile defines the automated release process for the project, following a Gitflow-based strategy. It handles version bumping, tagging, and branch synchronization.
+Automates the **Gitflow** release process. It handles versioning, branch management, and tagging.
 
-#### Parameters
+- **Trigger**: Manual.
+- **Parameters**:
+  - `BUMP`: Level of semantic version to increment (`X`: Major, `Y`: Minor, `Z`: Patch).
+- **Workflow**:
+  1.  Reads `VERSION` file.
+  2.  Creates `release/x.y.z` branch from `develop`.
+  3.  Updates `VERSION` file and commits.
+  4.  Merges to `main` and tags the release.
+  5.  Merges back to `develop` and deletes the release branch.
 
-The pipeline accepts a single build parameter:
+### 2. Deploy Pipeline (`deploy.Jenkinsfile`)
 
-- **`BUMP`**: Determines which part of the semantic version (`MAJOR.MINOR.PATCH`) to increment.
-  - `X`: **Major** version bump (e.g., 1.0.0 -> 2.0.0)
-  - `Y`: **Minor** version bump (e.g., 1.0.0 -> 1.1.0)
-  - `Z`: **Patch** version bump (e.g., 1.0.0 -> 1.0.1)
+Handles the deployment of a specific version (tag) to the AWS infrastructure.
 
-#### Workflow Steps
+- **Trigger**: Manual.
+- **Parameters**:
+  - `TAG`: Selects the Git tag to be deployed.
+- **Workflow**:
+  1.  Checkouts the selected tag.
+  2.  `terraform init`
+  3.  `terraform plan`
+  4.  **Manual Approval**: Wait for user confirmation.
+  5.  `terraform apply -auto-approve`
 
-1.  **Read Previous Version**: Reads the current version from the `VERSION` file in the project root.
-2.  **Calculate New Version**: increments the version numbers based on the selected `BUMP` parameter.
-3.  **Create Release Branch**: Creates a temporary branch `release/x.y.z` from `develop`.
-4.  **Update Version**: Writes the new version to `VERSION`, commits the change, and pushes the branch.
-5.  **Merge to Main**: Merges the release branch into `main` with `--no-ff`.
-6.  **Create Tag**: Tags the merge commit on `main` with the new version number.
-7.  **Sync Develop**: Merges `main` back into `develop` to ensure it has the latest version info and tags.
-8.  **Cleanup**: Deletes the temporary release branch.
+### 3. Format & Validate Pipeline (`format.Jenkinsfile`)
 
-#### Prerequisites
+Ensures code consistency and basic syntax correctness.
 
-- A `VERSION` file must exist in the root of the repository containing the current semantic version (e.g., `1.0.0`).
-- The Jenkins job must have SSH credentials configured (ID: `github`) to perform git operations (push, merge, tag).
+- **Trigger**: Manual or Pull Request/Push (depending on Jenkins configuration).
+- **Parameters**:
+  - `BRANCH_NAME`: Branch to format and validate.
+- **Workflow**:
+  1.  `terraform fmt` (automatically fixes formatting).
+  2.  `terraform validate`.
+  3.  Pushes changes back to the repository if any formatting fix was applied.
+
+### 4. SonarQube Analysis (`sonarqube.Jenkinsfile`)
+
+Performs static code analysis to detect vulnerabilities, security hotspots, and code smells.
+
+- **Trigger**: Manual or scheduled.
+- **Parameters**:
+  - `BRANCH_NAME`: Branch to analyze.
+- **Workflow**:
+  1.  Detects current version.
+  2.  Runs `sonar-scanner` pointing to `sonar.sierrapablo.dev`.
+  3.  Reports results to the SonarQube dashboard.
+
+---
+
+## Prerequisites for Jenkins
+
+- **Environment**: Jenkins node with `terraform` and `sonar-scanner`.
+- **Credentials**:
+  - `github`: SSH credentials to push/pull from the repository.
+  - `github-repo-pat`: A GitHub Personal Access Token used to create releases via the GitHub API.
+  - `sonarqube`: Token for authentication with the SonarQube server.
+- **Files**:
+  - A `VERSION` file must exist in the root for the release pipeline.
