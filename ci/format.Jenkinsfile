@@ -29,7 +29,7 @@ pipeline {
               git config user.email "${env.GIT_USER_EMAIL}"
 
               git fetch --all
-              git checkout -B ${params.BRANCH_NAME}
+              git checkout ${params.BRANCH_NAME}
               git pull
             """
           }
