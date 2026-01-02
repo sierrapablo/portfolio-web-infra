@@ -72,6 +72,7 @@ Performs static code analysis to detect vulnerabilities, security hotspots, and 
 - **Environment**: Jenkins node with `terraform` and `sonar-scanner`.
 - **Credentials**:
   - `github`: SSH credentials to push/pull from the repository.
+  - `github-repo-pat`: A GitHub Personal Access Token used to create releases via the GitHub API.
   - `sonarqube`: Token for authentication with the SonarQube server.
 - **Files**:
   - A `VERSION` file must exist in the root for the release pipeline.
