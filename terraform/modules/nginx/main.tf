@@ -12,8 +12,6 @@ resource "docker_container" "this" {
   image   = docker_image.this.image_id
   restart = var.restart_policy
 
-  exposed_ports = ["${var.internal_port}/tcp"]
-
   volumes {
     volume_name    = var.volume_name
     container_path = "/usr/share/nginx/html"

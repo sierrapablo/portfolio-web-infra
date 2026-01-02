@@ -29,12 +29,6 @@ variable "volume_name" {
   type        = string
 }
 
-variable "internal_port" {
-  description = "Puerto expuesto dentro del contenedor"
-  type        = number
-  default     = 4321
-}
-
 variable "restart_policy" {
   description = "Política de restart del contenedor"
   type        = string

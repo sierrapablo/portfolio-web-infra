@@ -46,18 +46,6 @@ variable "nginx_build_context" {
   default     = ".."
 }
 
-variable "nginx_internal_port" {
-  description = "Puerto interno del nginx"
-  type        = number
-  default     = 4321
-}
-
-variable "nginx_external_port" {
-  description = "Puerto externo del nginx"
-  type        = number
-  default     = 4321
-}
-
 variable "host_path" {
   description = "Ruta del host para el volumen con contenido estático"
   type        = string
