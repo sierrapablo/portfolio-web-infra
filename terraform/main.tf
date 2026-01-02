@@ -28,7 +28,4 @@ module "nginx" {
   volume_name  = module.portfolio_dist_volume.name
 
   host_path = var.host_path
-
-  internal_port = var.nginx_internal_port
-  external_port = var.nginx_external_port
 }
