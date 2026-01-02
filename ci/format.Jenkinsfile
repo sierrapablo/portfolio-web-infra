@@ -29,8 +29,8 @@ pipeline {
               git config user.email "${env.GIT_USER_EMAIL}"
 
               git fetch --all
-              git checkout -B ${params.BRANCH_NAME} origin/${params.BRANCH_NAME}
-              git pull origin ${params.BRANCH_NAME}
+              git checkout -B ${params.BRANCH_NAME}
+              git pull
             """
           }
         }
@@ -65,15 +65,15 @@ pipeline {
       steps {
         sshagent(credentials: ['github']) {
           script {
-            sh """
+            sh '''
               if ! git diff --quiet; then
                 git add .
                 git commit -m "chore: terraform format and validate"
-                git push origin ${params.BRANCH_NAME}
+                git push
               else
                 echo "No changes detected. Skipping commit."
               fi
-            """
+            '''
           }
         }
       }
