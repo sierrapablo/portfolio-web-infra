@@ -24,6 +24,7 @@ pipeline {
         sshagent(credentials: ['github']) {
           script {
             def branch = params.BRANCH_NAME.contains('/') ? params.BRANCH_NAME.split('/')[-1] : params.BRANCH_NAME
+            echo "Ejecutando formateo en la rama: ${branch}"
             sh """
               git config user.name "${env.GIT_USER_NAME}"
               git config user.email "${env.GIT_USER_EMAIL}"
