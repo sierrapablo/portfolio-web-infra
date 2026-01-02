@@ -1,6 +1,18 @@
 pipeline {
   agent any
 
+  parameters {
+    gitParameter(
+      name: 'BRANCH_NAME',
+      type: 'PT_BRANCH',
+      defaultValue: 'develop',
+      branchFilter: 'origin/(.*)',
+      description: 'Selecciona la rama para ejecutar el escaneo',
+      sortMode: 'DESCENDING_SMART',
+      selectedValue: 'DEFAULT'
+    )
+  }
+
   environment {
     SONAR_PROJECT_KEY = 'sierrapablo-portfolio-web-infra'
   }
@@ -8,7 +20,19 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout scm
+        sshagent(credentials: ['github']) {
+          script {
+            echo "Ejecutando escaneo en la rama: ${params.BRANCH_NAME}"
+            sh """
+              git config user.name "${env.GIT_USER_NAME}"
+              git config user.email "${env.GIT_USER_EMAIL}"
+
+              git fetch --all
+              git checkout ${params.BRANCH_NAME}
+              git pull
+            """
+          }
+        }
       }
     }
 
@@ -38,9 +62,8 @@ pipeline {
             ${tool 'sonar-scanner'}/bin/sonar-scanner \
             -X \
             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-            -Dsonar.projectVersion=${env.VERSION} \
-            -Dsonar.sources=. \
-            -Dsonar.exclusions=node_modules/**,dist/**,build/**
+            -Dsonar.projectVersion=${params.BRANCH_NAME}-${env.VERSION} \
+            -Dsonar.sources=.
           """
         }
       }
