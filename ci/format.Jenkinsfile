@@ -23,15 +23,14 @@ pipeline {
       steps {
         sshagent(credentials: ['github']) {
           script {
-            def branch = params.BRANCH_NAME.contains('/') ? params.BRANCH_NAME.split('/')[-1] : params.BRANCH_NAME
-            echo "Ejecutando formateo en la rama: ${branch}"
+            echo "Ejecutando formateo en la rama: ${params.BRANCH_NAME}"
             sh """
               git config user.name "${env.GIT_USER_NAME}"
               git config user.email "${env.GIT_USER_EMAIL}"
 
               git fetch --all
-              git checkout -B ${branch} origin/${branch}
-              git pull origin ${branch}
+              git checkout -B ${params.BRANCH_NAME} origin/${params.BRANCH_NAME}
+              git pull origin ${params.BRANCH_NAME}
             """
           }
         }
@@ -66,12 +65,11 @@ pipeline {
       steps {
         sshagent(credentials: ['github']) {
           script {
-            def branch = params.BRANCH_NAME.contains('/') ? params.BRANCH_NAME.split('/')[-1] : params.BRANCH_NAME
             sh """
               if ! git diff --quiet; then
                 git add .
                 git commit -m "chore: terraform format and validate"
-                git push origin ${branch}
+                git push origin ${params.BRANCH_NAME}
               else
                 echo "No changes detected. Skipping commit."
               fi
