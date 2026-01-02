@@ -6,6 +6,7 @@ pipeline {
       name: 'BRANCH_NAME',
       type: 'PT_BRANCH',
       defaultValue: 'develop',
+      branchFilter: 'origin/(.*)',
       description: 'Selecciona la rama para ejecutar el formateo',
       sortMode: 'DESCENDING_SMART',
       selectedValue: 'DEFAULT'
@@ -21,14 +22,17 @@ pipeline {
     stage('Checkout') {
       steps {
         sshagent(credentials: ['github']) {
-          sh """
-            git config user.name "${env.GIT_USER_NAME}"
-            git config user.email "${env.GIT_USER_EMAIL}"
+          script {
+            def branch = params.BRANCH_NAME.contains('/') ? params.BRANCH_NAME.split('/')[-1] : params.BRANCH_NAME
+            sh """
+              git config user.name "${env.GIT_USER_NAME}"
+              git config user.email "${env.GIT_USER_EMAIL}"
 
-            git fetch --all
-            git checkout ${params.BRANCH_NAME}
-            git pull origin ${params.BRANCH_NAME}
-          """
+              git fetch --all
+              git checkout -B ${branch} origin/${branch}
+              git pull origin ${branch}
+            """
+          }
         }
       }
     }
@@ -60,15 +64,18 @@ pipeline {
     stage('Git Commit') {
       steps {
         sshagent(credentials: ['github']) {
-          sh """
-            if ! git diff --quiet; then
-              git add .
-              git commit -m "chore: terraform format and validate"
-              git push origin ${params.BRANCH_NAME}
-            else
-              echo "No changes detected. Skipping commit."
-            fi
-          """
+          script {
+            def branch = params.BRANCH_NAME.contains('/') ? params.BRANCH_NAME.split('/')[-1] : params.BRANCH_NAME
+            sh """
+              if ! git diff --quiet; then
+                git add .
+                git commit -m "chore: terraform format and validate"
+                git push origin ${branch}
+              else
+                echo "No changes detected. Skipping commit."
+              fi
+            """
+          }
         }
       }
     }
