@@ -1,45 +1,47 @@
 # Infrastructure as Code with Terraform
+
 Template for IaC with Terraform
 
-[![Latest Release](https://img.shields.io/github/v/release/sierrapablo/infra-terraform-template?logo=github&style=flat-square)](https://github.com/sierrapablo/infra-terraform-template/releases)
-[![Stars](https://img.shields.io/github/stars/sierrapablo/infra-terraform-template?logo=github&style=flat-square)](https://github.com/sierrapablo/infra-terraform-template/stargazers)
-[![Terraform Validate](https://github.com/sierrapablo/infra-terraform-template/actions/workflows/validate.yaml/badge.svg)](https://github.com/sierrapablo/infra-terraform-template/actions/workflows/validate.yaml)
-[![Format Code](https://github.com/sierrapablo/infra-terraform-template/actions/workflows/format.yaml/badge.svg)](https://github.com/sierrapablo/infra-terraform-template/actions/workflows/format.yaml)
-
+[![Latest Release](https://img.shields.io/github/v/release/sierrapablo/portfolio-web-infra?logo=github&style=flat-square)](https://github.com/sierrapablo/portfolio-web-infra/releases)
+[![Stars](https://img.shields.io/github/stars/sierrapablo/portfolio-web-infra?logo=github&style=flat-square)](https://github.com/sierrapablo/portfolio-web-infra/stargazers)
+[![Jenkins](https://img.shields.io/badge/CI-Jenkins-blue?logo=jenkins&style=flat-square)](https://jenkins.sierrapablo.dev/job/portfolio-web/job/portfolio-web-infra-docker/job/portfolio-web-infra-docker-format/)
+[![SonarQube](https://img.shields.io/badge/Quality%20Gate-SonarQube-brightgreen?logo=sonarqube&style=flat-square)](https://sonar.sierrapablo.dev/dashboard?id=sierrapablo-portfolio-web-infra)
 
 > **🚧 Active Development**: This project is currently under active construction. Features, modules, and architecture are evolving and are subject to change.
 
 ## Overview
 
-This repository contains the template for Infrastructure as Code (IaC) with Terraform.
+This repository contains the infrastructure definition for the Portfolio Web project, managed with Terraform and automated via Jenkins pipelines.
 
 ## Repository Structure
 
-The project is organized into several key directories, each with its own specific documentation:
+The project is organized into several key directories:
 
-| Directory                | Description                                                                                 | Documentation                                       |
-| ------------------------ | ------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Directory                | Description                                                                                 | Documentation                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | **`terraform/`**         | The core infrastructure definition, including the `main` configuration and provider setups. | [View Documentation](./docs/terraform.md)         |
-| **`terraform/modules/`** | Reusable, self-contained Terraform modules.                                                   | [View Documentation](./docs/terraform-modules.md) |
-| **`ci/`**                | Jenkins pipelines managing the release lifecycle and versioning (Gitflow).                  | [View Documentation](./docs/ci.md)                |
-| **`.github/workflows/`** | GitHub Actions workflows for continuous integration (Format, Validate) and GitHub Releases. | [View Documentation](./docs/github-workflows.md) |
+| **`terraform/modules/`** | Reusable, self-contained Terraform modules.                                                 | [View Documentation](./docs/terraform-modules.md) |
+| **`ci/`**                | Jenkins pipelines managing the lifecycle: format, validate, sonarqube, deploy, and release.         | [View Documentation](./docs/ci.md)                |
 
 ### Features
 
 - **Modular Architecture**: Leveraging Terraform modules to create reusable components.
-- **Automated Quality Checks**:
-  - **Validation**: Terraform syntax and configuration validation on every Pull Request.
-  - **Formatting**: Automatic formatting of Terraform code (`terraform fmt`) to ensure style consistency.
+- **Automated Quality Checks (via Jenkins)**:
+  - **Validation & Formatting**: `format.Jenkinsfile` ensures Terraform syntax and style consistency.
+  - **Code Quality**: `sonarqube.Jenkinsfile` performs static analysis of the infrastructure code.
+- **Continuous Deployment**:
+  - `deploy.Jenkinsfile` handles automated infrastructure provisioning.
 - **Release Automation**:
-  - **Gitflow Strategy**: Automated version bumping, tagging, and changelog generation using Jenkins and GitHub Actions.
+  - **Gitflow Strategy**: Automated version bumping, tagging, and branch synchronization using `release.Jenkinsfile`.
 
-### Getting Started
+### Jenkins Pipelines
 
-To get started, initialize a repository based on this template **cloning only `develop` branch**, then create manually `main`: `git checkout -b main` and switch to `develop` again. After that, **update VERSION** to `0.0.0`, commit and push changes. This push manually initializes *GitHub Actions* pipelines.
-> ℹ️ Note: you can start creating branches from `develop` to implement a real *GitFlow* strategy, or you can push over `develop` like a *Trunk-based* strategy.
+The repository includes several pipelines to manage the infrastructure:
 
-### Use with Jenkins
-If you have a Jenkins node, you can launch releases via [release.Jenkinsfile](./ci/release.Jenkinsfile). [View Documentation](./docs/ci.md).
+- **Format**: [format.Jenkinsfile](./ci/format.Jenkinsfile) - Runs `terraform fmt` and `terraform validate`.
+- **SonarQube**: [sonarqube.Jenkinsfile](./ci/sonarqube.Jenkinsfile) - Scans for issues and vulnerabilities.
+- **Release**: [release.Jenkinsfile](./ci/release.Jenkinsfile) - Automates the release lifecycle. [View Documentation](./docs/ci.md).
+- **Deploy**: [deploy.Jenkinsfile](./ci/deploy.Jenkinsfile) - Deploys infrastructure to AWS.
 
 ## Credits
 
