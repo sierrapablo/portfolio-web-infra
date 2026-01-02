@@ -21,7 +21,7 @@ The project is organized into several key directories:
 | ------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | **`terraform/`**         | The core infrastructure definition, including the `main` configuration and provider setups. | [View Documentation](./docs/terraform.md)         |
 | **`terraform/modules/`** | Reusable, self-contained Terraform modules.                                                 | [View Documentation](./docs/terraform-modules.md) |
-| **`ci/`**                | Jenkins pipelines managing the lifecycle: format, validate, sonarqube, and release.         | [View Documentation](./docs/ci.md)                |
+| **`ci/`**                | Jenkins pipelines managing the lifecycle: format, validate, sonarqube, deploy, and release.         | [View Documentation](./docs/ci.md)                |
 
 ### Features
 
