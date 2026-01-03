@@ -28,20 +28,20 @@ variable "portfolio_dist_volume_name" {
   default     = "portfolio-web-dist"
 }
 
-variable "nginx_name" {
-  description = "Nombre del contenedor del nginx"
+variable "nodejs_name" {
+  description = "Nombre del contenedor Node.js"
   type        = string
   default     = "portfolio-web"
 }
 
-variable "nginx_image_name" {
-  description = "Nombre de la imagen del nginx"
+variable "nodejs_image_name" {
+  description = "Nombre de la imagen Node.js"
   type        = string
-  default     = "portfolio-web-nginx:latest"
+  default     = "portfolio-web-nodejs:latest"
 }
 
-variable "nginx_build_context" {
-  description = "Contexto de construcción del nginx"
+variable "nodejs_build_context" {
+  description = "Contexto de construcción de la imagen Node.js"
   type        = string
   default     = ".."
 }
