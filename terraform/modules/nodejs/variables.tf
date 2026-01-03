@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Nombre del contenedor Nginx"
+  description = "Nombre del contenedor Node.js"
   type        = string
 }
 
@@ -25,7 +25,7 @@ variable "network_name" {
 }
 
 variable "volume_name" {
-  description = "Nombre del volumen con contenido estático"
+  description = "Nombre del volumen con el build SSR de Astro"
   type        = string
 }
 
@@ -36,6 +36,6 @@ variable "restart_policy" {
 }
 
 variable "host_path" {
-  description = "Ruta del host para el volumen con contenido estático"
+  description = "Ruta del host para el volumen con el build SSR"
   type        = string
 }

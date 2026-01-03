@@ -4,11 +4,11 @@ This directory contains reusable, self-contained Terraform modules for managing 
 
 ## Available Modules
 
-| Module        | Description                                          | Key Features                                                |
-| :------------ | :--------------------------------------------------- | :---------------------------------------------------------- |
-| **`network`** | Manages Docker networks for container communication. | Supports external networks and custom drivers.              |
-| **`nginx`**   | Handles Nginx image builds and container deployment. | Custom Dockerfile support, volume mounting, and networking. |
-| **`volume`**  | Manages persistent Docker volumes.                   | Includes `prevent_destroy` lifecycle for data safety.       |
+| Module        | Description                                            | Key Features                                                |
+| :------------ | :----------------------------------------------------- | :---------------------------------------------------------- |
+| **`network`** | Manages Docker networks for container communication.   | Supports external networks and custom drivers.              |
+| **`nodejs`**  | Handles Node.js image builds and container deployment. | Custom Dockerfile support, volume mounting, and networking. |
+| **`volume`**  | Manages persistent Docker volumes.                     | Includes `prevent_destroy` lifecycle for data safety.       |
 
 ---
 
@@ -24,14 +24,14 @@ Used to create or data-fetch Docker networks.
   - `external`: Boolean to indicate if the network is managed outside Terraform.
   - `driver`: Network driver (default: `bridge`).
 
-### 2. Nginx Module (`/terraform/modules/nginx`)
+### 2. Node.js Module (`/terraform/modules/nodejs`)
 
-A complete module that builds an Nginx image and runs the corresponding container.
+A complete module that builds a Node.js image and runs the corresponding container for Astro SSR.
 
 - **Resources**: `docker_image` (with build context), `docker_container`.
 - **Key Features**:
   - **Custom Build**: Can build images from a local context and Dockerfile.
-  - **Persistence**: Mounts a volume to `/usr/share/nginx/html`.
+  - **SSR Runtime**: Mounts a volume to `/app` containing the Astro SSR build.
   - **Isolation**: Connects the container to a dedicated Docker network.
 
 ### 3. Volume Module (`/terraform/modules/volume`)

@@ -1,14 +1,14 @@
 # Terraform Root Configuration
 
-This directory contains the root Terraform configuration for the Portfolio Web infrastructure. It orchestrates the various modules to deploy a containerized Nginx environment with networking and persistent storage.
+This directory contains the root Terraform configuration for the Portfolio Web infrastructure. It orchestrates the various modules to deploy a containerized Node.js environment for Astro SSR with networking and persistent storage.
 
 ## Architecture Overview
 
 The infrastructure is composed of:
 
 1.  **Network**: A dedicated Docker bridge network for container isolation.
-2.  **Volume**: Persisted storage for static assets (portfolio distribution).
-3.  **Container**: An Nginx instance built and deployed from a local Dockerfile.
+2.  **Volume**: Persisted storage for the Astro SSR build (server and client assets).
+3.  **Container**: A Node.js instance built and deployed from a local Dockerfile.
 
 ## File Structure
 
@@ -33,8 +33,8 @@ Key variables used in this configuration:
 
 - `project_name`: Used for labeling resources.
 - `environment`: Deployment environment (e.g., `prod`, `dev`).
-- `nginx_image_name`: Name for the built Docker image.
-- `host_path`: Path on the host machine for volume data.
+- `nodejs_image_name`: Name for the built Docker image.
+- `host_path`: Path on the host machine for volume data (Astro SSR build).
 
 ---
 

@@ -19,6 +19,6 @@ output "dist_volume_mountpoint" {
   value = module.portfolio_dist_volume.mountpoint
 }
 
-output "nginx_container" {
-  value = module.nginx.container_name
+output "nodejs_container" {
+  value = module.nodejs.container_name
 }

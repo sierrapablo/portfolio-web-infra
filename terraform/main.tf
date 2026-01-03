@@ -13,16 +13,16 @@ module "portfolio_dist_volume" {
   labels = {
     project     = var.project_name
     environment = var.environment
-    purpose     = "static-assets"
+    purpose     = "ssr-build"
   }
 }
 
-module "nginx" {
-  source = "./modules/nginx"
+module "nodejs" {
+  source = "./modules/nodejs"
 
-  name          = var.nginx_name
-  image_name    = var.nginx_image_name
-  build_context = var.nginx_build_context
+  name          = var.nodejs_name
+  image_name    = var.nodejs_image_name
+  build_context = var.nodejs_build_context
 
   network_name = module.reverse_proxy_network.name
   volume_name  = module.portfolio_dist_volume.name
