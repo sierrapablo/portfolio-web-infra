@@ -11,7 +11,7 @@ Template for IaC with Terraform
 
 ## Overview
 
-This repository contains the infrastructure definition for the Portfolio Web project, managed with Terraform and automated via Jenkins pipelines.
+This repository contains the infrastructure definition for the Portfolio Web project, managed with Terraform and automated via Jenkins pipelines. The infrastructure provides a **Node.js runtime** for **Astro SSR** (Server-Side Rendering), fully decoupled from the application code.
 
 ## Repository Structure
 
