@@ -6,4 +6,6 @@ VOLUME /app
 
 EXPOSE 4321
 
+USER node
+
 CMD ["node", "./dist/server/entry.mjs"]
