@@ -1,9 +1,9 @@
-FROM nginxinc/nginx-unprivileged:alpine
+FROM node:24.11.1-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-VOLUME /usr/share/nginx/html
+VOLUME /app
 
 EXPOSE 4321
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "./dist/server/entry.mjs"]
