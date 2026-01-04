@@ -3,6 +3,6 @@ resource "docker_volume" "this" {
   driver = var.driver
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
