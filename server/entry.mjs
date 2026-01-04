@@ -18,7 +18,7 @@ const MIME_TYPES = {
     '.js': 'application/javascript',
 };
 
-// Leer versión al inicio
+// Read version from file
 const versionPath = path.join(__dirname, '../VERSION');
 let version = '0.0.0';
 try {
@@ -27,15 +27,25 @@ try {
     console.error('No se pudo leer el archivo VERSION', e);
 }
 
-const server = http.createServer((req, res) => {
-    // Determinar el archivo a servir
-    let filePath = req.url === '/' ? '/index.html' : req.url;
+const server = http.createServer(async (req, res) => {
+    try {
+        // Sanitize URL to prevent path traversal
+        const unsafePath = req.url === '/' ? '/index.html' : req.url;
+        const safePath = path.normalize(unsafePath).replace(/^(\.\.[\/\\])+/, '');
+        const fullPath = path.join(__dirname, safePath);
 
-    // Manejo especial para inyectar la versión en el footer.js
-    if (filePath === '/footer.js') {
-        const footerPath = path.join(__dirname, 'footer.js');
-        if (fs.existsSync(footerPath)) {
-            let content = fs.readFileSync(footerPath, 'utf-8');
+        // Ensure the path is within the intended directory
+        if (!fullPath.startsWith(__dirname)) {
+            res.writeHead(403, {
+                'Content-Type': 'text/plain'
+            });
+            res.end('Forbidden');
+            return;
+        }
+
+        // Special handling for footer.js
+        if (fullPath === path.join(__dirname, 'footer.js')) {
+            let content = await fs.promises.readFile(fullPath, 'utf-8');
             content = content.replace('{{VERSION}}', version);
             res.writeHead(200, {
                 'Content-Type': MIME_TYPES['.js']
@@ -43,28 +53,30 @@ const server = http.createServer((req, res) => {
             res.end(content);
             return;
         }
-    }
 
-    const fullPath = path.join(__dirname, filePath);
-    const ext = path.extname(fullPath);
-
-    // Verificar si el archivo existe
-    if (!fs.existsSync(fullPath)) {
-        res.writeHead(404, {
-            'Content-Type': 'text/plain'
+        // Serve other static files
+        const ext = path.extname(fullPath);
+        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+        const content = await fs.promises.readFile(fullPath);
+        res.writeHead(200, {
+            'Content-Type': contentType
         });
-        res.end('404 Not Found');
-        return;
+        res.end(content);
+
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            res.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            res.end('404 Not Found');
+        } else {
+            console.error(`Server error:`, err);
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
+            });
+            res.end('Internal Server Error');
+        }
     }
-
-    // Servir el archivo con el Content-Type correcto
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-    const content = fs.readFileSync(fullPath, 'utf-8');
-
-    res.writeHead(200, {
-        'Content-Type': contentType
-    });
-    res.end(content);
 });
 
 server.listen(PORT, HOST, () => {
