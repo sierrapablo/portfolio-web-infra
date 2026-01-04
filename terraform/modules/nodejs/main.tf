@@ -12,6 +12,11 @@ resource "docker_container" "this" {
   image   = docker_image.this.image_id
   restart = var.restart_policy
 
+  env = [
+    "HOST=0.0.0.0",
+    "PORT=4321"
+  ]
+
   volumes {
     volume_name    = var.volume_name
     container_path = "/app"
