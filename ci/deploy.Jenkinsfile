@@ -51,6 +51,12 @@ pipeline {
       }
     }
 
+    stage('Stop Docker Container') {
+      steps {
+        sh 'docker stop portfolio-web'
+      }
+    }
+
     stage('Terraform Destroy') {
       steps {
         dir('terraform') {
