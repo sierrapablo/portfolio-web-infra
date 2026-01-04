@@ -55,3 +55,29 @@ p {
         transform: scale(1.2);
     }
 }
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    color: #a0aec0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.875rem;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+    pointer-events: auto;
+    width: fit-content;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
