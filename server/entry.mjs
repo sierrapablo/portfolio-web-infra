@@ -18,9 +18,33 @@ const MIME_TYPES = {
     '.js': 'application/javascript',
 };
 
+// Leer versión al inicio
+const versionPath = path.join(__dirname, '../VERSION');
+let version = '0.0.0';
+try {
+    version = fs.readFileSync(versionPath, 'utf-8').trim();
+} catch (e) {
+    console.error('No se pudo leer el archivo VERSION', e);
+}
+
 const server = http.createServer((req, res) => {
     // Determinar el archivo a servir
     let filePath = req.url === '/' ? '/index.html' : req.url;
+
+    // Manejo especial para inyectar la versión en el footer.js
+    if (filePath === '/footer.js') {
+        const footerPath = path.join(__dirname, 'footer.js');
+        if (fs.existsSync(footerPath)) {
+            let content = fs.readFileSync(footerPath, 'utf-8');
+            content = content.replace('{{VERSION}}', version);
+            res.writeHead(200, {
+                'Content-Type': MIME_TYPES['.js']
+            });
+            res.end(content);
+            return;
+        }
+    }
+
     const fullPath = path.join(__dirname, filePath);
     const ext = path.extname(fullPath);
 
