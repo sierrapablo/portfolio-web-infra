@@ -3,6 +3,7 @@ FROM node:24.11.1-alpine
 WORKDIR /app
 
 COPY server/ ./server/
+COPY VERSION ./VERSION
 
 VOLUME /app
 

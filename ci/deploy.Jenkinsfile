@@ -45,6 +45,26 @@ pipeline {
       }
     }
 
+    stage('Confirm New Deployment') {
+      steps {
+        input message: "Deploy tag ${params.TAG}?", ok: 'Deploy'
+      }
+    }
+
+    stage('Terraform Destroy') {
+      steps {
+        dir('terraform') {
+          sh 'terraform destroy -auto-approve'
+        }
+      }
+    }
+
+    stage('Clean Docker Images') {
+      steps {
+        sh 'docker image prune -a -f'
+      }
+    }
+
     stage('Terraform Plan') {
       steps {
         dir('terraform') {
@@ -55,7 +75,6 @@ pipeline {
 
     stage('Terraform Apply') {
       steps {
-        input message: "Deploy tag ${params.TAG}?", ok: 'Apply'
         dir('terraform') {
           sh 'terraform apply -auto-approve'
         }
