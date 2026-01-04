@@ -1,18 +1,6 @@
 pipeline {
   agent any
 
-  parameters {
-    gitParameter(
-      name: 'BRANCH_NAME',
-      type: 'PT_BRANCH',
-      defaultValue: 'develop',
-      branchFilter: 'origin/(.*)',
-      description: 'Selecciona la rama para ejecutar el escaneo',
-      sortMode: 'DESCENDING_SMART',
-      selectedValue: 'DEFAULT'
-    )
-  }
-
   environment {
     SONAR_PROJECT_KEY = 'sierrapablo-portfolio-web-infra'
   }
@@ -22,13 +10,13 @@ pipeline {
       steps {
         sshagent(credentials: ['github']) {
           script {
-            echo "Ejecutando escaneo en la rama: ${params.BRANCH_NAME}"
+            echo "Ejecutando escaneo..."
             sh """
               git config user.name "${env.GIT_USER_NAME}"
               git config user.email "${env.GIT_USER_EMAIL}"
 
               git fetch --all
-              git checkout ${params.BRANCH_NAME}
+              git checkout develop
               git pull
             """
           }
@@ -62,8 +50,9 @@ pipeline {
             ${tool 'sonar-scanner'}/bin/sonar-scanner \
             -X \
             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-            -Dsonar.projectVersion=${params.BRANCH_NAME}-${env.VERSION} \
-            -Dsonar.sources=.
+            -Dsonar.projectVersion=${env.VERSION} \
+            -Dsonar.sources=. \
+            -Dsonar.exclusions=server/**
           """
         }
       }
@@ -78,7 +67,8 @@ pipeline {
         ==========================================
         Version: ${env.VERSION}
         Duration: ${currentBuild.durationString}
-        =========================================="""
+        ==========================================
+      """
     }
     failure {
       echo """
@@ -87,7 +77,8 @@ pipeline {
         ==========================================
         Version: ${env.VERSION}
         Duration: ${currentBuild.durationString}
-        =========================================="""
+        ==========================================
+      """
     }
     always {
       echo 'Attempting to clean up workspace...'
