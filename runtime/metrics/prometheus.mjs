@@ -9,7 +9,7 @@ import {
  * Registrar métricas estándar de Node.js
  */
 collectDefaultMetrics({
-  prefix: "nodejs_",
+  prefix: "",
   timeout: 5000,
 });
 
