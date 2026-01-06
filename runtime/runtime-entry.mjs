@@ -1,14 +1,14 @@
-import "./http-interceptor.mjs";
+import "./metrics/prometheus.mjs";
 
 process.env.PORT = process.env.PORT || "3000";
 process.env.HOST = process.env.HOST || "0.0.0.0";
 
 console.log(
-  `[Runtime] Iniciando aplicación en el puerto ${process.env.PORT}...`
+  `[Runtime] Iniciando aplicación en ${process.env.HOST}:${process.env.PORT}...`
 );
 
 /**
- * Manejo de estabilidad: Capturar errores no controlados para evitar caídas abruptas
+ * Manejo de estabilidad: Capturar errores no controlados
  */
 process.on("uncaughtException", (err) => {
   console.error("[Runtime] Critical Error (Uncaught Exception):", err);
@@ -23,7 +23,9 @@ process.on("unhandledRejection", (reason, promise) => {
   );
 });
 
-// Importar el entry point del servidor de forma dinámica
+/**
+ * Cargar entry point del servidor
+ */
 import("../server/entry.mjs")
   .then(() => {
     console.log("[Runtime] Servidor cargado correctamente.");
