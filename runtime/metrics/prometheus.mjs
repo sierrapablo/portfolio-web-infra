@@ -29,14 +29,17 @@ export const httpRequestDuration = new Histogram({
   buckets: [0.1, 0.3, 0.5, 1, 1.5, 2, 5],
 });
 
-/**
- * Handler genérico para /metrics
- * (framework-agnostic)
- */
-export function metricsHandler(req, res) {
-  res.writeHead(200, {
-    "Content-Type": register.contentType,
-    "Cache-Control": "no-cache",
-  });
-  res.end(register.metrics());
+export async function metricsHandler(_req, res) {
+  try {
+    const metrics = await register.metrics();
+    res.writeHead(200, {
+      "Content-Type": register.contentType,
+      "Cache-Control": "no-cache",
+    });
+    res.end(metrics);
+  } catch (err) {
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Error generando métricas");
+    console.error("[Metrics] Error:", err);
+  }
 }
