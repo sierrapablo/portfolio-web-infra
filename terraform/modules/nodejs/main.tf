@@ -14,7 +14,7 @@ resource "docker_container" "this" {
 
   env = [
     "HOST=0.0.0.0",
-    "PORT=4321"
+    "PORT=3000"
   ]
 
   volumes {
