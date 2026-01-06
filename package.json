@@ -1,0 +1,17 @@
+{
+  "name": "portfolio-web-infra",
+  "version": "3.0.0",
+  "description": "",
+  "main": "runtime/runtime-entry.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node runtime/runtime-entry.mjs",
+    "dev": "nodemon runtime/runtime-entry.mjs"
+  },
+  "author": "Pablo Sierra Lorente",
+  "license": "MIT",
+  "packageManager": "pnpm@10.23.0",
+  "dependencies": {
+    "prom-client": "^15.1.3"
+  }
+}
